@@ -216,10 +216,28 @@ function constraints(filePath) {
 
 								}
 
+								if (child.type === 'UnaryExpression'
+									&& child.operator == "!") 
+								{
+									if (child.argument.type == 'MemberExpression'
+										&& params.indexOf(child.argument.object.name) > -1) {
+										var val = {};
+										val[child.argument.property.name] = true;
+										functionConstraints[funcName].constraints
+										.push({
+											ident : child.argument.object.name,
+											value : "{" + child.argument.property.name + ": true }"
+										});
+									}
+								}
+
+
+
+
 								if (child.type === 'BinaryExpression'
-										&& child.operator == "<") {
+									&& child.operator == "<") {
 									if (child.left.type == 'Identifier'
-											&& params.indexOf(child.left.name) > -1) {
+										&& params.indexOf(child.left.name) > -1) {
 										// get expression from original source
 										// code:
 										// var expression =
@@ -229,27 +247,27 @@ function constraints(filePath) {
 												child.right.range[0],
 												child.right.range[1]);
 										functionConstraints[funcName].constraints
-												.push({
-													ident : child.left.name,
-													value : rightHand + "- 1"
-												});
+										.push({
+											ident : child.left.name,
+											value : rightHand + "- 1"
+										});
 
 									}
 
 								}
 
 								if (child.type == "CallExpression"
-										&& child.callee.property
-										&& child.callee.property.name == "readFileSync") {
+									&& child.callee.property
+									&& child.callee.property.name == "readFileSync") {
 									for (var p = 0; p < params.length; p++) {
 										if (child.arguments[0].name == params[p]) {
 											functionConstraints[funcName].constraints
-													.push({
-														// A fake path to a file
-														ident : params[p],
-														value : "'pathContent/file1'",
-														mocking : 'fileWithContent'
-													});
+											.push({
+												// A fake path to a file
+												ident : params[p],
+												value : "'pathContent/file1'",
+												mocking : 'fileWithContent'
+											});
 										}
 									}
 								}

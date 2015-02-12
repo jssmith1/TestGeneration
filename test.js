@@ -30,7 +30,8 @@ subject.normalize(faker.phone.phoneNumber());
 for(i = 0; i < 6000; i++){
 subject.format(faker.phone.phoneNumber(),'','');
 }
-subject.format(faker.phone.phoneNumber(),'','');
+subject.format(faker.phone.phoneNumber(),'',{normalize: true });
+subject.format(faker.phone.phoneNumber(),'',{normalize: true });
 for(i = 0; i < 6000; i++){
 subject.blackListNumber(faker.phone.phoneNumber());
 }
