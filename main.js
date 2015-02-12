@@ -21,8 +21,7 @@ function main() {
 
 	constraints(filePath);
 
-	generateTestCases()
-
+	generateTestCases();
 }
 
 function fakeDemo() {
@@ -51,17 +50,41 @@ var mockFileLibrary = {
 
 function generateTestCases() {
 
-	var content = "var subject = require('./subject.js')\nvar mock = require('mock-fs');\n";
+	var content = "var subject = require('./subject.js')\nvar mock = require('mock-fs');\nvar faker = require('faker');\n";
 	for ( var funcName in functionConstraints) {
 		var params = {};
 
 		// initialize params
 		for (var i = 0; i < functionConstraints[funcName].params.length; i++) {
 			var paramName = functionConstraints[funcName].params[i];
+			
 			// params[paramName] = '\'' + faker.phone.phoneNumber()+'\'';
 			params[paramName] = '\'\'';
 		}
 
+		var phoneParams = params;
+		var containsPhone = false;
+		for (param in phoneParams){
+			console.log("HERE: " + param);
+			if (param.indexOf('phone') > -1)
+				containsPhone = true;
+		}
+		
+		if (containsPhone){
+			//generate a bunch of phone "calls"
+			content += "for(i = 0; i < 6000; i++){\n"
+			for (param in phoneParams){
+				if (param.indexOf('phone') > -1)
+					phoneParams[param] = "faker.phone.phoneNumber()"
+			}
+			var args = Object.keys(phoneParams).map(function(k) {
+				return phoneParams[k];
+			}).join(",");
+			content += "subject.{0}({1});\n".format(funcName, args);
+			content += "}\n"
+			
+		}
+		
 		// console.log( params );
 
 		// update parameter values based on known constraints.
@@ -80,7 +103,6 @@ function generateTestCases() {
 		for (var c = 0; c < constraints.length; c++) {
 			var constraint = constraints[c];
 			if (params.hasOwnProperty(constraint.ident)) {
-				console.log(params);
 				params[constraint.ident] = constraint.value;
 				var args = Object.keys(params).map(function(k) {
 					return params[k];

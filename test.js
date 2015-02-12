@@ -1,5 +1,6 @@
 var subject = require('./subject.js')
 var mock = require('mock-fs');
+var faker = require('faker');
 subject.inc('',undefined);
 subject.inc('',"defined");
 subject.inc(0- 1,"defined");
@@ -22,6 +23,15 @@ mock.restore();
 mock({"path/fileExists":{}});
 	subject.fileTest('path/fileExists','pathContent/file1');
 mock.restore();
-subject.normalize('path/fileExists','pathContent/file1');
-subject.format('path/fileExists','pathContent/file1');
-subject.blackListNumber('path/fileExists','pathContent/file1');
+for(i = 0; i < 6000; i++){
+subject.normalize(faker.phone.phoneNumber());
+}
+subject.normalize(faker.phone.phoneNumber());
+for(i = 0; i < 6000; i++){
+subject.format(faker.phone.phoneNumber(),'','');
+}
+subject.format(faker.phone.phoneNumber(),'','');
+for(i = 0; i < 6000; i++){
+subject.blackListNumber(faker.phone.phoneNumber());
+}
+subject.blackListNumber(faker.phone.phoneNumber());
